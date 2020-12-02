@@ -52,17 +52,17 @@ class A_counterPart extends Module {
   currentCount := counterMeta.read(io.operationAddr)
 
   //TODO: Verifying interrupt logic
-  //The valid cycle dealy one cycle change
+
   when(currentCount === 0.U && valid(io.operationAddr) === true.B) {
+    printf("current 0\n")
     valid := valid.bitSet(io.operationAddr, false.B)
     io.interruptSignal := true.B
   }
 
-//  printf("counterMeta(%d) = %d\n", io.operationAddr, counterMeta(io.operationAddr))
-//  printf("counterPart.interruptSignal = %d\n", io.interruptSignal)
-//  //printf("next = %d\n", next)
-//  printf("valid(%d) = %d\n", io.operationAddr,valid(io.operationAddr))
-
+  printf("counterMeta(%d) = %d\n", io.operationAddr, counterMeta(io.operationAddr))
+  printf("counterPart.interruptSignal = %d\n", io.interruptSignal)
+  //printf("next = %d\n", next)
+  printf("valid(%d) = %d\n", io.operationAddr,valid(io.operationAddr))
 }
 
 /*---------------------------------------------------------------------*/
