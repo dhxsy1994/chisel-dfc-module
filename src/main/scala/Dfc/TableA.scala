@@ -32,32 +32,59 @@ class A_counterPart extends Module {
   //valid Reg
   val valid = RegInit(0.U(64.W))
 
-  //ports Init
-  io.interruptSignal := false.B
+  val lastAddr = RegInit(0.U)
+  lastAddr := io.operationAddr
   //next init
   val next = WireInit(0.U)
   //current Count
   val currentCount = Wire(UInt())
 
-  when(io.load === true.B && io.dIn.orR() === true.B && valid(io.operationAddr) === false.B){
+  val stimulate = RegInit(0.U)
+
+  val equalZero = WireInit(0.U)
+
+  //TODO: Verifying interrupt logic!!!!
+  when(io.load && !valid(io.operationAddr)){
     //load condition
     counterMeta(io.operationAddr) := io.dIn
     valid := valid.bitSet(io.operationAddr, true.B)
-  }.elsewhen(io.load === false.B && io.countDownEn === true.B && counterMeta(io.operationAddr) > 0.U){
-    //countdown condition
+  }.elsewhen(io.load && valid(io.operationAddr)){
+    printf("Failed signal, load = %d, valid = %d\n", io.load, valid(io.operationAddr))
+  }
+
+  when(io.countDownEn && valid(io.operationAddr)){
     next := currentCount - 1.U
     counterMeta.write(io.operationAddr, next)
+  }.elsewhen(io.countDownEn && !valid(io.operationAddr)){
+    printf("Failed signal, countDownEn = %d, valid = %d\n", io.countDownEn, valid(io.operationAddr))
+  }.otherwise {
+    next := 0.U
   }
 
   currentCount := counterMeta.read(io.operationAddr)
 
-  //TODO: Verifying interrupt logic
-
-  when(currentCount === 0.U && valid(io.operationAddr) === true.B) {
-    printf("current 0\n")
-    valid := valid.bitSet(io.operationAddr, false.B)
-    io.interruptSignal := true.B
+  when(valid(lastAddr)){
+    equalZero := currentCount === 0.U
+  }.otherwise{
+    equalZero := false.B
   }
+
+  when(equalZero(0)) {
+    printf("stimulate up\n")
+    stimulate := 1.U
+  }.otherwise{
+    stimulate := 0.U
+  }
+
+  when(stimulate === 1.U){
+    stimulate := 0.U
+//    valid.bitSet(io.operationAddr, false.B)
+//    counterMeta.write(io.operationAddr, 255.U)
+    valid.bitSet(lastAddr, false.B)
+    counterMeta.write(lastAddr, 255.U)
+  }
+
+  io.interruptSignal := stimulate
 
   printf("counterMeta(%d) = %d\n", io.operationAddr, counterMeta(io.operationAddr))
   printf("counterPart.interruptSignal = %d\n", io.interruptSignal)
@@ -67,6 +94,7 @@ class A_counterPart extends Module {
 
 /*---------------------------------------------------------------------*/
 //Separated dfc_AIO imp
+
 class dfc_AIO extends Bundle {
   val wEn = Input(Bool())
   val wData = Input(UInt(32.W))
