@@ -12,11 +12,11 @@ import org.scalatest.{FlatSpec, Matchers}
 //sbt testOnly Dfc.WaveformTester_A_counterPart
 class WaveformTester_A_counterPart(dut: A_counterPart) extends PeekPokeTester(dut){
   //simplify test
-  val load_t = Seq(1, 1, 0, 0, 0, 0, 0, 0)
-  val countDown_t = Seq(0, 0, 1, 1, 1, 0, 0, 0)
-  val operationAddr_t = Seq(2, 7, 2, 2, 2, 0, 0, 0)
+  val load_t = Seq(1, 0, 0, 0, 0, 0, 0, 0, 0)
+  val countDown_t = Seq(0, 0, 1, 1, 1, 0, 0, 0, 0)
+  val operationAddr_t = Seq(2, 0, 2, 2, 2, 0, 0, 0, 0)
   //init count num
-  val dIn_t = Seq(3, 2, 0, 0, 0, 0, 0, 0)
+  val dIn_t = Seq(3, 0, 0, 0, 0, 0, 0, 0, 0)
 
   println("Testing singal step length = " + load_t.length)
 
