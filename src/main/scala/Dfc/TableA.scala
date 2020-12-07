@@ -32,7 +32,7 @@ class A_counterPart extends Module {
   //valid Reg
   val valid = RegInit(0.U(64.W))
 
-  //buffer input regs
+  //buffered input regs
   val lastAddr = RegInit(0.U)
   lastAddr := io.operationAddr
   val lastcountDownEn = RegInit(false.B)
@@ -41,6 +41,7 @@ class A_counterPart extends Module {
   lastload := io.load
   val lastdIn = RegInit(0.U)
   lastdIn := io.dIn
+  val equalZeroAddr = RegInit(0.U)
 
   //next init
   val next = WireInit(0.U)
@@ -50,29 +51,28 @@ class A_counterPart extends Module {
   val stimulate = RegInit(0.U)
 
   val equalZero = WireInit(false.B)
-
-  //TODO: Verifying interrupt logic!!!!
+  
   when(lastload && !valid(lastAddr)){
     //load condition
     counterMeta(lastAddr) := lastdIn
     valid := valid.bitSet(lastAddr, true.B)
   }.elsewhen(lastload && valid(lastAddr)){
-    printf("Failed signal, load = %d, valid = %d\n", io.load, valid(lastAddr))
+    printf("Failed signal, load = %d, valid = %d\n", lastload, valid(lastAddr))
   }
 
   when(lastcountDownEn && valid(lastAddr)){
     next := currentCount - 1.U
     counterMeta.write(lastAddr, next)
   }.elsewhen(lastcountDownEn && !valid(lastAddr)){
-    printf("Failed signal, countDownEn = %d, valid = %d\n", io.countDownEn, valid(lastAddr))
+    printf("Failed signal, countDownEn = %d, valid = %d\n", lastcountDownEn, valid(lastAddr))
   }.otherwise {
     next := 0.U
   }
 
   currentCount := counterMeta.read(lastAddr)
-
-  when(valid(lastAddr)){
-    equalZero := currentCount === 0.U
+  //countDownEn arrive judge next time = curreentCount - 1
+  when(valid(lastAddr) && lastcountDownEn){
+    equalZero := currentCount - 1.U === 0.U
   }.otherwise{
     equalZero := false.B
   }
@@ -80,24 +80,22 @@ class A_counterPart extends Module {
   when(equalZero) {
     printf("stimulate up\n")
     stimulate := 1.U
+    equalZeroAddr := lastAddr
   }.otherwise{
     stimulate := 0.U
   }
 
-  //TODO: clean operation not correct
   when(stimulate === 1.U){
     stimulate := 0.U
-//    valid.bitSet(io.operationAddr, false.B)
-//    counterMeta.write(io.operationAddr, 255.U)
-    valid.bitSet(lastAddr, false.B)
-    counterMeta.write(lastAddr, 255.U)
+    valid.bitSet(equalZeroAddr, false.B)
+    counterMeta.write(equalZeroAddr, 255.U)
   }
 
   io.interruptSignal := stimulate
 
-  printf("counterMeta(%d) = %d\n", io.operationAddr, counterMeta(lastAddr))
+  printf("counterMeta(%d) = %d\n", lastAddr, counterMeta(lastAddr))
   printf("counterPart.interruptSignal = %d\n", io.interruptSignal)
-  //printf("next = %d\n", next)
+  //printf("currentCount_early = %d\n", currentCount_early)
   printf("valid(%d) = %d\n", lastAddr,valid(lastAddr))
 }
 
