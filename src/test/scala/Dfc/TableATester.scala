@@ -45,7 +45,7 @@ class WaveformSpec_A_counterPart extends FlatSpec with Matchers {
 class WaveformTester_dfc_A_Loopone (dut: dfc_A) extends PeekPokeTester(dut) {
   /* testing write once
     //Count from 3 -> 0, InterruptSig 0 -> 1
-    //Waveform shown correct
+    //Waveform shown
 
     tdData
     val twCount = 3.U(8.W)
@@ -56,13 +56,13 @@ class WaveformTester_dfc_A_Loopone (dut: dfc_A) extends PeekPokeTester(dut) {
   val twData = 0x03080010
 
   //testing poke Seq
-  val wEn_t = Seq(1, 0, 0, 0, 0, 0, 0, 0)
-  val wData_t = Seq(twData, 0, 0, 0, 0, 0, 0, 0)
-  val opAddr_t = Seq(9, 9, 0, 0, 0, 0, 0, 0)
+  val wEn_t = Seq(1, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  val wData_t = Seq(twData, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+  val opAddr_t = Seq(9, 9, 0, 0, 0, 0, 0, 0, 0, 0)
 
-  val counterDownEn_t = Seq(0, 0, 1, 1, 0, 1, 0, 0)
+  val counterDownEn_t = Seq(0, 0, 0, 1, 0, 1, 1, 0, 0, 0)
   //val counterDownEn_t = Seq(0, 0, 0, 0, 0, 0, 0, 0)
-  val counterDownAddr_t = Seq(0, 0, 9, 9, 0, 9, 0, 0)
+  val counterDownAddr_t = Seq(0, 0, 0, 9, 0, 9, 9, 0, 0, 0)
 
   println("Testing singal step length = " + wEn_t.length)
 
@@ -75,7 +75,6 @@ class WaveformTester_dfc_A_Loopone (dut: dfc_A) extends PeekPokeTester(dut) {
     poke(dut.io.counterDownEn, counterDownEn_t(i))
     step(1)
   }
-
   step(1)
 }
 
