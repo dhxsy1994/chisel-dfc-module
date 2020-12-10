@@ -38,9 +38,22 @@ class dfc_DIO extends Bundle {
 class dfc_D extends Module {
 
   val io = IO(new dfc_DIO)
+
   //ports init
   io.counterDownEn := false.B
   io.counterDownAddr := 0.U
+
+  //buffered input regs
+  val lastwEnAddr = RegInit(false.B)
+  lastwEnAddr := io.wEnAddr
+  val lastwEnInfo = RegInit(false.B)
+  lastwEnInfo := io.wEnInfo
+  val lastopAddr = RegInit(0.U)
+  lastopAddr  := io.opAddr
+  val lastwData = RegInit(0.U)
+  lastwData := io.wData
+  val lastlistenAddr = RegInit(0.U)
+  lastlistenAddr := io.listenAddr
 
   //Meta
   val addrMeta_valid = RegInit(0.U(256.W))
@@ -49,14 +62,14 @@ class dfc_D extends Module {
   val addrMetaMem = Mem(256, new D_addrMeta)
   val infoMetaMem = Mem(256, new D_infoMeta)
 
-  io.rData := addrMetaMem(io.opAddr).listenAddr
+  io.rData := addrMetaMem(lastopAddr).listenAddr
 
-  //middle wire
+  //middle addr wire
   val addr_wire  = Wire(UInt(8.W))
-  addr_wire := io.opAddr
+  addr_wire := lastopAddr
 
   //write Meta wire with init
-  //TODO: infoMeta LinkNext data type is UInt, can not recognize NULL
+  //TODO: infoMeta LinkNext data type is UInt, can not recognize NULL. Updating in future version
   val winfoMeta = Wire(new D_infoMeta)
   winfoMeta.LinkNext := 0.U
   winfoMeta.TableAId := 0.U
@@ -64,23 +77,22 @@ class dfc_D extends Module {
   val waddrMeta = Wire(new D_addrMeta)
   waddrMeta.listenAddr := 0.U
 
-
   //TODO: verify two type enalbe signal with write
-  when(io.wEnAddr === true.B){
-    waddrMeta.listenAddr := io.wData
-  }.elsewhen(io.wEnInfo === true.B){
-    winfoMeta.TableAId := io.wData(5, 0)
-    winfoMeta.LinkNext := io.wData(13, 6)
+  when(lastwEnAddr) {
+    waddrMeta.listenAddr := lastwData
+  }.elsewhen(lastwEnInfo){
+    winfoMeta.TableAId := lastwData(5, 0)
+    winfoMeta.LinkNext := lastwData(13, 6)
   }
 
   //write addrMeta
-  when(io.wEnAddr === true.B && addrMeta_valid(addr_wire) === false.B){
+  when(lastwEnAddr && !addrMeta_valid(addr_wire)){
     addrMetaMem.write(addr_wire, waddrMeta)
     addrMeta_valid := addrMeta_valid.bitSet(addr_wire, true.B)
   }
 
   //write infoMeta
-  when(io.wEnInfo === true.B && infoMeta_valid(addr_wire) === false.B){
+  when(lastwEnInfo && !infoMeta_valid(addr_wire)){
     infoMetaMem.write(addr_wire, winfoMeta)
     infoMeta_valid := infoMeta_valid.bitSet(addr_wire, true.B)
   }
@@ -121,47 +133,34 @@ class dfc_D extends Module {
   */
 
   //for Dealy one cycle counterDownPost
-  val listenHitAddr_Dealy = Wire(UInt())
-  val coutnerDownPost_Dealy = Wire(Bool())
-  val counterDownAddr_Dealy = WireInit(0.U(6.W))
 
-  listenHitAddr_Dealy := 0.U
-  coutnerDownPost_Dealy := false.B
-  counterDownAddr_Dealy := 0.U
+  val listenHitAddr = Wire(UInt())
+  listenHitAddr := 0.U
 
   //listenAddr parallel compare 256 lines
   for(i <- 0 to 255){
-    when(io.listenAddr === addrMetaMem(i.asUInt()).listenAddr &&
-      addrMeta_valid(i) === true.B &&
-      infoMeta_valid(i) === true.B) {
-      printf("listenAddr matched, Post\n")
-      counterDownAddr_Dealy := infoMetaMem(i.asUInt()).TableAId
-      coutnerDownPost_Dealy := true.B
-      listenHitAddr_Dealy := i.asUInt()
-      // RegNext condition not work. next cycle this block condition judge failed
+    when(lastlistenAddr === addrMetaMem(i.asUInt()).listenAddr &&
+      addrMeta_valid(i) && infoMeta_valid(i)) {
+      printf("---listenAddr matched---\n")
+      io.counterDownAddr := infoMetaMem(i.asUInt()).TableAId
+      io.counterDownEn := true.B
+      listenHitAddr := i.asUInt()
     }
   }
 
-  //Dealy one cycle counterDownPost
-  //if not Dealy one cycle, the output signal only have semi cycel true
-  val listenHitAddr = RegNext(listenHitAddr_Dealy)
-  io.counterDownEn := RegNext(coutnerDownPost_Dealy)
-  io.counterDownAddr := RegNext(counterDownAddr_Dealy)
-
-  when(io.counterDownEn === true.B){
-    printf("valid set addr = %d\n", listenHitAddr)
+  when(io.counterDownEn){
+    printf("listenHitaddr = %d\n", listenHitAddr)
     addrMeta_valid := addrMeta_valid.bitSet(listenHitAddr, false.B)
     infoMeta_valid := infoMeta_valid.bitSet(listenHitAddr, false.B)
   }
 
-  printf("addrMeta(%d) = %d\n", io.opAddr, addrMetaMem(io.opAddr).listenAddr)
-  printf("infoMeta(%d).LinkNext = %d\n", io.opAddr, infoMetaMem(io.opAddr).LinkNext)
-  printf("infoMeta(%d).TableAId = %d\n", io.opAddr, infoMetaMem(io.opAddr).TableAId)
+  printf("addrMeta(%d) = %d\n", lastopAddr, addrMetaMem(lastopAddr).listenAddr)
+  printf("infoMeta(%d).LinkNext = %d\n", lastopAddr, infoMetaMem(lastopAddr).LinkNext)
+  printf("infoMeta(%d).TableAId = %d\n", lastopAddr, infoMetaMem(lastopAddr).TableAId)
 
-  printf("counterDownAddr = %d\n", io.counterDownAddr)
-  printf("counterDownEn = %d\n", io.counterDownEn)
+  printf("io.counterDownAddr = %d\n", io.counterDownAddr)
+  printf("io.counterDownEn = %d\n", io.counterDownEn)
 
   printf("listenHitAddr = %d\n", listenHitAddr)
-
 }
 

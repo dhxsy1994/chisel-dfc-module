@@ -11,15 +11,15 @@ class WaveformTester_dfc_D (dut: dfc_D) extends PeekPokeTester(dut){
   val Addr_data_t = 0x46403377
   val HitListenAddr: Int = Addr_data_t
   val Info_data_t = 0x0000024C
-  //infoMeta tablaAid = 12 linkNext = 9
+  //infoMeta  linkNext = 12 tablaAid = 9
 
   val wEnA_t = Seq(1, 0, 0, 0, 0, 0, 0, 0)
   val wENI_t = Seq(0, 1, 0, 0, 0, 0, 0, 0)
-  val opAddr_t = Seq(8, 8, 8, 0, 0, 0, 0, 0)
+  val opAddr_t = Seq(8, 8, 8, 8, 0, 0, 0, 0)
 
   val wData_t = Seq(Addr_data_t, Info_data_t, 0, 0, 0, 0, 0, 0)
-  val listenAddr_t = Seq(0, 0, 0, HitListenAddr, 0, 0, 0, 0)
-  //val rAddr_t = Seq(8, 8, 8, 8, 8, 8, 8, 8)
+  val listenAddr_t = Seq(0, 0, 0, 0, HitListenAddr, 0, 0, 0)
+
 
   println("Testing singal step length = " + wEnA_t.length)
 
