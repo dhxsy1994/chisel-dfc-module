@@ -207,7 +207,7 @@ class dfc_A extends Module {
 
   //sync with counterPart.interruptSignal
   when(counterPartInterrupt_wire) {
-    printf("TableA Post exception\n")
+    printf("---TableA Post exception---\n")
     io.interruptPost := true.B
     valid := valid.bitSet(counterPart.io.equalZeroAddr, false.B)
   }
