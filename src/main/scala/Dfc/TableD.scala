@@ -132,8 +132,6 @@ class dfc_D extends Module {
   }
   */
 
-  //for Dealy one cycle counterDownPost
-
   val listenHitAddr = Wire(UInt())
   listenHitAddr := 0.U
 
