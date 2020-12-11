@@ -152,13 +152,13 @@ class dfc_D extends Module {
     infoMeta_valid := infoMeta_valid.bitSet(listenHitAddr, false.B)
   }
 
-  printf("addrMeta(%d) = %d\n", lastopAddr, addrMetaMem(lastopAddr).listenAddr)
+  printf("addrMeta(%d) = %x\n", lastopAddr, addrMetaMem(lastopAddr).listenAddr)
   printf("infoMeta(%d).LinkNext = %d\n", lastopAddr, infoMetaMem(lastopAddr).LinkNext)
   printf("infoMeta(%d).TableAId = %d\n", lastopAddr, infoMetaMem(lastopAddr).TableAId)
 
   printf("io.counterDownAddr = %d\n", io.counterDownAddr)
   printf("io.counterDownEn = %d\n", io.counterDownEn)
 
-  printf("listenHitAddr = %d\n", listenHitAddr)
+  //printf("listenHitAddr = %d\n", listenHitAddr)
 }
 
