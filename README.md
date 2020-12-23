@@ -1,16 +1,15 @@
-Chisel Project Template
+Chisel Project DFC Module
 =======================
-
-You've done the Chisel [tutorials](https://github.com/ucb-bar/chisel-tutorial), and now you 
-are ready to start your own chisel project.  The following procedure should get you started
-with a clean running [Chisel3](https://github.com/freechipsproject/chisel3) project.
 
 > More and more users are finding IntelliJ to be a powerful tool for Chisel coding. See the 
 [IntelliJ Installation Guide](https://github.com/ucb-bar/chisel-template/wiki/IntelliJ-Installation-Guide) for how to install it.
 
-## Make your own Chisel3 project
+### DFC Module
+This is the repo of DFC hardware module
+
+package Dfc
+
 ### How to get started
-The first thing you want to do is clone this repo into a directory of your own.  I'd recommend creating a chisel projects directory somewhere
 ```sh
 mkdir ~/ChiselProjects
 cd ~/ChiselProjects
@@ -44,50 +43,6 @@ Be sure to update (or delete) the License section and add a LICENSE file of your
 git commit -m 'Starting MyChiselProject'
 ```
 Connecting this up to github or some other remote host is an exercise left to the reader.
-
-### Did it work?
-You should now have a project based on Chisel3 that can be run.<br/>
-So go for it, at the command line in the project root.
-```sh
-sbt 'testOnly gcd.GCDTester -- -z Basic'
-```
->This tells the test harness to only run the test in GCDTester that contains the word Basic
-There are a number of other examples of ways to run tests in there, but we just want to see that
-one works.
-
-You should see a whole bunch of output that ends with something like the following lines
-```
-[info] [0.001] SEED 1540570744913
-test GCD Success: 168 tests passed in 1107 cycles in 0.067751 seconds 16339.24 Hz
-[info] [0.050] RAN 1102 CYCLES PASSED
-[info] GCDTester:
-[info] GCD
-[info] Basic test using Driver.execute
-[info] - should be used as an alternative way to run specification
-[info] using --backend-name verilator
-[info] running with --is-verbose
-[info] running with --generate-vcd-output on
-[info] running with --generate-vcd-output off
-[info] ScalaTest
-[info] Run completed in 3 seconds, 184 milliseconds.
-[info] Total number of tests run: 1
-[info] Suites: completed 1, aborted 0
-[info] Tests: succeeded 1, failed 0, canceled 0, ignored 0, pending 0
-[info] All tests passed.
-[info] Passed: Total 1, Failed 0, Errors 0, Passed 1
-[success] Total time: 5 s, completed Oct 26, 2018 9:19:07 AM
-```
-If you see the above then...
-
-### It worked!
-You are ready to go. We have a few recommended practices and things to do.
-* Use packages and following conventions for [structure](http://www.scala-sbt.org/0.13/docs/Directories.html) and [naming](http://docs.scala-lang.org/style/naming-conventions.html)
-* Package names should be clearly reflected in the testing hierarchy
-* Build tests for all your work.
-* This template includes a dependency on the Chisel3 IOTesters, this is a reasonable starting point for most tests
-* You can remove this dependency in the build.sbt file if necessary
-* Change the name of your project in the build.sbt file
-* Change your README.md
 
 There are [instructions for generating Verilog](https://github.com/freechipsproject/chisel3/wiki/Frequently-Asked-Questions#get-me-verilog) on the Chisel wiki.
 
