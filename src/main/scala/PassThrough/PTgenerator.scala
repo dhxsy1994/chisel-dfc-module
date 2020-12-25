@@ -15,7 +15,7 @@ class PTgenerator(width: Int) extends Module {
   })
   io.out := io.in
 
-  //println("PTgenerator over!\n")
+  printf("%d\n", io.out)
 }
 
 //算术运算逻辑
