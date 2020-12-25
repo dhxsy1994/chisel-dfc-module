@@ -41,11 +41,22 @@ object Types {
 class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val dut = Module(pt)
   val width = 4
-  dut.io.in := 8.U
+  val (cntr, done) = Counter(true.B, 12)
+  val rnd = scala.util.Random
+  var testList: Seq[UInt] = Seq()
+
+  for ( i <- 0 until 12){
+    testList++ ((rnd.nextInt(1 << 4)).U(4.W))
+  }
+  dut.io.in := VecInit(testList)(cntr)
+  when(done){
+    stop();
+    stop()
+  }
   val write = ((0 until 4 )foldLeft 0.U){
     (data, i) => data | data
   }
-  println(write)
+
 }
 
 class basicT_run extends FlatSpec{
