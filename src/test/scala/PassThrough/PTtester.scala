@@ -7,6 +7,7 @@ import chisel3.util._
 import org.scalatest._
 import chisel3.testers._
 import chisel3.iotesters._
+import scala.collection.mutable.ArrayBuffer
 import chisel3.iotesters.{ChiselFlatSpec, Driver, PeekPokeTester}
 
 
@@ -43,10 +44,10 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val width = 4
   val (cntr, done) = Counter(true.B, 12)
   val rnd = scala.util.Random
-  var testList: Seq[UInt] = Seq()
+  val testList = new ArrayBuffer[UInt]
 
   for ( i <- 0 until 12){
-    testList++ ((rnd.nextInt(1 << 4)).U(4.W))
+     testList+=((rnd.nextInt(1 << 4)).U(4.W))
   }
   dut.io.in := VecInit(testList)(cntr)
   when(done){
