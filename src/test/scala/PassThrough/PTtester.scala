@@ -36,6 +36,22 @@ object Types {
   = Enum(4)
 }
 
+
+// for testing basictester
+class basicT_PT(pt: => PTgenerator) extends BasicTester{
+  val dut = Module(pt)
+  val width = 4
+  dut.io.in := 8.U
+  val write = ((0 until 4 )foldLeft 0.U){
+    (data, i) => data | data
+  }
+  println(write)
+}
+
+class basicT_run extends FlatSpec{
+  TesterDriver.execute(() => new basicT_PT(new PTgenerator(4)))
+}
+
 class WaveformTester_ALU(dut: ALU) extends PeekPokeTester(dut){
 
   println("ALU tester")
