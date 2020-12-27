@@ -46,11 +46,7 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val (cntr, done) = Counter(true.B, 12)
 
   val rnd = scala.util.Random
-  val testList = new ArrayBuffer[UInt]
-
-  for ( i <- 0 to 12){
-     testList+=((rnd.nextInt(1 << 4)).U(4.W))
-  }
+  val testList = Seq.fill(12)((rnd.nextInt(1 << 4 )).U(4.W))
 
   dut.io.in := VecInit(testList)(cntr)
 
@@ -61,7 +57,7 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   assert(dut.io.out === VecInit(testList)(cntr))
   printf("cntr=%d, io.in=%d, io.out=%d\n", cntr, dut.io.in, dut.io.out)
 
-  val write = ((0 until 4 )foldLeft 0.U){
+  val write = (( 0 until 4 )foldLeft 0.U){
     (data, i) => data | data
   }
   printf("write=%d\n", write)
