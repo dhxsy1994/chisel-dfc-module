@@ -48,7 +48,7 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val rnd = scala.util.Random
   val testList = new ArrayBuffer[UInt]
 
-  for ( i <- 0 until 12){
+  for ( i <- 0 to 12){
      testList+=((rnd.nextInt(1 << 4)).U(4.W))
   }
 
