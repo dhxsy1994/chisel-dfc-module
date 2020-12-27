@@ -43,24 +43,23 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val dut = Module(pt)
   val width = 4
   //cntr is Counter
-  val (cntr, done) = Counter(true.B, 12)
-
   val rnd = scala.util.Random
-  val testList = Seq.fill(12)((rnd.nextInt(1 << 4 )).U(4.W))
+  val testList = Seq.fill(10)((rnd.nextInt(1 << 4)).U(4.W))
+
+
+  val (cntr, done) = Counter(true.B, testList.size)
 
   dut.io.in := VecInit(testList)(cntr)
 
-  when(done){
-    stop();
-    stop()
+  when(done){ stop(); stop()
   }
   assert(dut.io.out === VecInit(testList)(cntr))
   printf("cntr=%d, io.in=%d, io.out=%d\n", cntr, dut.io.in, dut.io.out)
 
-  val write = (( 0 until 4 )foldLeft 0.U){
-    (data, i) => data | data
-  }
-  printf("write=%d\n", write)
+//  val write = (( 0 until 4 )foldLeft 0.U){
+//    (data, i) => data | data
+//  }
+//  printf("write=%d\n", write)
 }
 
 class basicT_run extends FlatSpec{
