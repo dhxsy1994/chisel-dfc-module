@@ -42,26 +42,35 @@ object Types {
 class basicT_PT(pt: => PTgenerator) extends BasicTester{
   val dut = Module(pt)
   val width = 4
+  //cntr is Counter
   val (cntr, done) = Counter(true.B, 12)
+
   val rnd = scala.util.Random
   val testList = new ArrayBuffer[UInt]
 
   for ( i <- 0 until 12){
      testList+=((rnd.nextInt(1 << 4)).U(4.W))
   }
+
   dut.io.in := VecInit(testList)(cntr)
+
   when(done){
     stop();
     stop()
   }
+  assert(dut.io.out === VecInit(testList)(cntr))
+  printf("cntr=%d, io.in=%d, io.out=%d\n", cntr, dut.io.in, dut.io.out)
+
   val write = ((0 until 4 )foldLeft 0.U){
     (data, i) => data | data
   }
-
+  printf("write=%d\n", write)
 }
 
 class basicT_run extends FlatSpec{
-  TesterDriver.execute(() => new basicT_PT(new PTgenerator(4)))
+  "basic test PTgenerator" should "pass"in{
+    assert(TesterDriver.execute(() => new basicT_PT(new PTgenerator(4))))
+  }
 }
 
 class WaveformTester_ALU(dut: ALU) extends PeekPokeTester(dut){

@@ -14,8 +14,6 @@ class PTgenerator(width: Int) extends Module {
     val out = Output(UInt(width.W))
   })
   io.out := io.in
-
-  printf("%d\n", io.out)
 }
 
 //算术运算逻辑
