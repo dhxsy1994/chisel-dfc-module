@@ -26,7 +26,7 @@ class QueueTester(q: => Queue_ready) extends BasicTester{
   }
   printf("io.in.ready = %d\n", dut.io.in.ready)
   printf("io.out.valid = %d, io.out.bits = %d\n", dut.io.out.ready, dut.io.out.bits)
-  printf("io.in.bits = %d", dut.io.in.bits)
+  printf("io.in.bits = %d\n", dut.io.in.bits)
 }
 
 class QueueTests extends FlatSpec{
