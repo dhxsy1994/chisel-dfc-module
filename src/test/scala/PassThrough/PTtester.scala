@@ -32,14 +32,8 @@ class WaveformSpec_PT extends FlatSpec with Matchers{
   }
 }
 
-object Types {
-  val add :: sub :: mul :: div :: Nil
-  = Enum(4)
-}
-
-
-// for testing basictester
-class basicT_PT(pt: => PTgenerator) extends BasicTester{
+// For testing basictester
+class basicTester_PT(pt: => PTgenerator) extends BasicTester{
   val dut = Module(pt)
   val width = 4
   //cntr is Counter
@@ -55,16 +49,11 @@ class basicT_PT(pt: => PTgenerator) extends BasicTester{
   }
   assert(dut.io.out === VecInit(testList)(cntr))
   printf("cntr=%d, io.in=%d, io.out=%d\n", cntr, dut.io.in, dut.io.out)
-
-//  val write = (( 0 until 4 )foldLeft 0.U){
-//    (data, i) => data | data
-//  }
-//  printf("write=%d\n", write)
 }
 
 class basicT_run extends FlatSpec{
   "basic test PTgenerator" should "pass"in{
-    assert(TesterDriver.execute(() => new basicT_PT(new PTgenerator(4))))
+    assert(TesterDriver.execute(() => new basicTester_PT(new PTgenerator(4))))
   }
 }
 
@@ -161,7 +150,14 @@ class WaveformTester_shiftReg_serIn(dut: shiftReg) extends PeekPokeTester(dut){
   step(1)
   poke(dut.io.serIn, 0)
   step(2)
+}
 
+class WaveformSpec_shiftReg extends FlatSpec with Matchers{
+  "Wavefrom-test-shiftReg" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output", "on"), () => new shiftReg() ){
+      c => new WaveformTester_shiftReg_serIn(c)
+    } should be (true)
+  }
 }
 
 class WaveformTester_shiftReg_serOut(dut: shiftReg_serOut) extends PeekPokeTester(dut){
@@ -174,6 +170,13 @@ class WaveformTester_shiftReg_serOut(dut: shiftReg_serOut) extends PeekPokeTeste
   step(4)
 }
 
+class WaveformSpec_shiftReg_serOut extends FlatSpec with Matchers {
+  "Wavefrom-test-shiftReg_serOut" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output", "on"), () => new shiftReg_serOut() ){
+      c =>  new WaveformTester_shiftReg_serOut(c)
+    } should be (true)
+  }
+}
 
 class WaveformTester_Reg_en(dut: Reg_en) extends PeekPokeTester(dut){
   println("Reg_en tester")
@@ -198,6 +201,14 @@ class WaveformTester_Reg_en(dut: Reg_en) extends PeekPokeTester(dut){
 
 }
 
+class WaveformSpec_Reg_en extends FlatSpec with Matchers {
+  "WaveformSpec-Reg_en" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output", "on"), () => new Reg_en()){
+      c => new WaveformTester_Reg_en(c)
+    } should be (true)
+  }
+}
+
 class WaveformTester_Memory(dut: Memory) extends PeekPokeTester(dut){
   poke(dut.io.wrData, 88)
   poke(dut.io.wrAddr, 0)
@@ -205,39 +216,6 @@ class WaveformTester_Memory(dut: Memory) extends PeekPokeTester(dut){
   step(1)
   poke(dut.io.rdAddr, 0)
   step(1)
-}
-
-
-
-
-
-
-
-
-
-
-class WaveformSpec_shiftReg extends FlatSpec with Matchers{
-  "Wavefrom-test-shiftReg" should "pass" in {
-    Driver.execute(Array("--generate-vcd-output", "on"), () => new shiftReg() ){
-      c => new WaveformTester_shiftReg_serIn(c)
-    } should be (true)
-  }
-}
-
-class WaveformSpec_shiftReg_serOut extends FlatSpec with Matchers {
-  "Wavefrom-test-shiftReg_serOut" should "pass" in {
-    Driver.execute(Array("--generate-vcd-output", "on"), () => new shiftReg_serOut() ){
-      c =>  new WaveformTester_shiftReg_serOut(c)
-    } should be (true)
-  }
-}
-
-class WaveformSpec_Reg_en extends FlatSpec with Matchers {
-  "WaveformSpec-Reg_en" should "pass" in {
-    Driver.execute(Array("--generate-vcd-output", "on"), () => new Reg_en()){
-      c => new WaveformTester_Reg_en(c)
-    } should be (true)
-  }
 }
 
 class WaveformSpec_Memory extends FlatSpec with Matchers {
