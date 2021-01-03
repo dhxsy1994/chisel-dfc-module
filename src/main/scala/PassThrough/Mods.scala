@@ -67,13 +67,6 @@ class Vec_Module extends Module{
   }
 }
 
-//class Valid_output extends Module{
-//  val io = IO(new Bundle() {
-//    //val counterDownPost = Valid()
-//  })
-//}
-//
-
 class SimpleLink extends Bundle {
   val data = Output(UInt(16.W))
   val valid = Output(Bool())
