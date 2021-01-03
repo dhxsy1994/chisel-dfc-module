@@ -13,8 +13,8 @@ class QueueTester(q: => Queue_ready) extends BasicTester{
   val rnd = scala.util.Random
   val testIn_bits = Seq.fill(10)((rnd.nextInt(1 << 8)).U(8.W))
 
+  val testIn_valid = Seq(1, 1, 1, 0, 0, 0, 0, 0).map(i => i.asUInt())
 
-  val testIn_valid = Seq(1, 1, 1, 1, 1, 1, 1, 1).map(i => i.asUInt())
   val testOut_ready = Seq(0, 0, 0, 1, 1, 1, 0, 0).map(i => i.asUInt())
 
   dut.io.in.bits := VecInit(testIn_bits)(cntr)
@@ -25,10 +25,11 @@ class QueueTester(q: => Queue_ready) extends BasicTester{
     stop()
   }
   printf("io.in.ready = %d\n", dut.io.in.ready)
-  printf("in.out.valid = %d, io.out.bits = %d\n", dut.io.out.ready, dut.io.out.bits)
+  printf("io.out.valid = %d, io.out.bits = %d\n", dut.io.out.ready, dut.io.out.bits)
+  printf("io.in.bits = %d", dut.io.in.bits)
 }
 
-class  QueueTests extends FlatSpec{
+class QueueTests extends FlatSpec{
   "basic test PTgenerator" should "pass"in{
     assert(TesterDriver.execute(() => new QueueTester(new Queue_ready)))
   }
