@@ -8,27 +8,6 @@ import org.scalatest.FlatSpec
 class QueueTester(q: => Queue_ready) extends BasicTester{
   val dut = Module(q)
 
-  def Cat(l: Seq[Bits]): UInt = (l.tail foldLeft l.head.asUInt){(x, y) =>
-    assert(x.isLit() && y.isLit())
-    (x.litValue() << y.getWidth | y.litValue()).U((x.getWidth + y.getWidth).W)
-  }
-  def Cat(x: Bits, l: Bits*): UInt = Cat(x :: l.toList)
-
-  def rs1(inst: UInt) = ((inst.litValue() >> 15) & 0x1f).toInt
-  def rs2(inst: UInt) = ((inst.litValue() >> 20) & 0x1f).toInt
-  def rd (inst: UInt) = ((inst.litValue() >> 7)  & 0x1f).toInt
-  def csr(inst: UInt) =  (inst.litValue() >> 20)
-  def reg(x: Int) = (x & ((1 << 5) - 1)).U(5.W)
-  def imm(x: Int) = (x & ((1 << 20) - 1)).S(21.W)
-
-  def U(op: UInt, rd: Int, i: Int) =
-    Cat(imm(i), reg(rd), op)
-  val LUI    = BigInt("0110111", 2).U(7.W)
-
-  val tU = U(LUI, 5, 12416)
-
-  println(tU)
-
   val (cntr, done) = Counter(true.B, 8)
 
   val rnd = scala.util.Random
@@ -52,7 +31,7 @@ class QueueTester(q: => Queue_ready) extends BasicTester{
 }
 
 class QueueTests extends FlatSpec{
-  "basic test PTgenerator" should "pass"in{
+  "basic test QueueTests" should "pass"in{
     assert(TesterDriver.execute(() => new QueueTester(new Queue_ready)))
   }
 }
