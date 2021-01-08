@@ -87,12 +87,15 @@ class dfc_D extends Module {
 
   //write addrMeta
   when(lastwEnAddr && !addrMeta_valid(addr_wire)){
+    printf("[WTD] (id: %d).addrMeta.listenAddr = %x\n", lastopAddr, waddrMeta.listenAddr)
     addrMetaMem.write(addr_wire, waddrMeta)
     addrMeta_valid := addrMeta_valid.bitSet(addr_wire, true.B)
   }
 
   //write infoMeta
   when(lastwEnInfo && !infoMeta_valid(addr_wire)){
+    printf("[WTD] (id: %d).infoMeta.TableAId = %d\n", lastopAddr, winfoMeta.TableAId)
+    printf("[WTD] (id: %d).infoMeta.LinkNext = %d\n", lastopAddr, winfoMeta.LinkNext)
     infoMetaMem.write(addr_wire, winfoMeta)
     infoMeta_valid := infoMeta_valid.bitSet(addr_wire, true.B)
   }
@@ -139,7 +142,7 @@ class dfc_D extends Module {
   for(i <- 0 to 255){
     when(lastlistenAddr === addrMetaMem(i.asUInt()).listenAddr &&
       addrMeta_valid(i) && infoMeta_valid(i)) {
-      printf("---listenAddr matched---\n")
+      printf("[HIT] TableD listenAddr Hit\n")
       io.counterDownAddr := infoMetaMem(i.asUInt()).TableAId
       io.counterDownEn := true.B
       listenHitAddr := i.asUInt()
@@ -147,18 +150,14 @@ class dfc_D extends Module {
   }
 
   when(io.counterDownEn){
-    printf("listenHitaddr = %d\n", listenHitAddr)
+    printf("[HIT] Hit addr = %d\n", listenHitAddr)
     addrMeta_valid := addrMeta_valid.bitSet(listenHitAddr, false.B)
     infoMeta_valid := infoMeta_valid.bitSet(listenHitAddr, false.B)
   }
 
-  printf("addrMeta(%d) = %x\n", lastopAddr, addrMetaMem(lastopAddr).listenAddr)
-  printf("infoMeta(%d).LinkNext = %d\n", lastopAddr, infoMetaMem(lastopAddr).LinkNext)
-  printf("infoMeta(%d).TableAId = %d\n", lastopAddr, infoMetaMem(lastopAddr).TableAId)
-
-  printf("io.counterDownAddr = %d\n", io.counterDownAddr)
-  printf("io.counterDownEn = %d\n", io.counterDownEn)
-
-  //printf("listenHitAddr = %d\n", listenHitAddr)
+//  printf("addrMeta(%d) = %x\n", lastopAddr, addrMetaMem(lastopAddr).listenAddr)
+//  printf("infoMeta(%d).LinkNext = %d\n", lastopAddr, infoMetaMem(lastopAddr).LinkNext)
+//  printf("infoMeta(%d).TableAId = %d\n", lastopAddr, infoMetaMem(lastopAddr).TableAId)
+  printf("[Counter] counterDownAddr = %d, counterDownEn = %d\n", io.counterDownAddr, io.counterDownEn)
 }
 

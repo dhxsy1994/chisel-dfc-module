@@ -48,17 +48,18 @@ class A_counterPart extends Module {
 
   when(lastload && !valid(lastoperationAddr)){
     //load condition
+    printf("[WTA] counterPart(id: %d) = %d\n", lastoperationAddr, lastdIn)
     counterMeta(lastoperationAddr) := lastdIn
     valid := valid.bitSet(lastoperationAddr, true.B)
   }.elsewhen(lastload && valid(lastoperationAddr)){
-    printf("Failed signal, load = %d, valid = %d\n", lastload, valid(lastoperationAddr))
+    printf("[FATAL] Failed signals, load = %d, valid = %d\n", lastload, valid(lastoperationAddr))
   }
 
   when(lastcountDownEn && valid(lastoperationAddr)){
     next := currentCount - 1.U
     counterMeta.write(lastoperationAddr, next)
   }.elsewhen(lastcountDownEn && !valid(lastoperationAddr)){
-    printf("Failed signal, countDownEn = %d, valid = %d\n", lastcountDownEn, valid(lastoperationAddr))
+    printf("[FATAL] Failed signals, countDownEn = %d, valid = %d\n", lastcountDownEn, valid(lastoperationAddr))
   }.otherwise {
     next := 0.U
   }
@@ -76,6 +77,7 @@ class A_counterPart extends Module {
   when(equalZero) {
     stimulate := true.B
     equalZeroAddr := lastoperationAddr
+    printf("[INTPOST] counterPart.stimulate = %d\n", stimulate)
   }.otherwise{
     stimulate := false.B
   }
@@ -89,9 +91,6 @@ class A_counterPart extends Module {
 
   io.interruptSignal := stimulate
   io.equalZeroAddr := equalZeroAddr
-  printf("counterMeta(%d) = %d\n", lastoperationAddr, counterMeta(lastoperationAddr))
-  printf("counterPart.interruptSignal = %d\n", io.interruptSignal)
-  printf("valid(%d) = %d\n", lastoperationAddr,valid(lastoperationAddr))
 }
 
 /*---------------------------------------------------------------------*/
@@ -179,6 +178,10 @@ class dfc_A extends Module {
 
   //write A table
   when(lastwEn && !valid(lastopAddr)) {
+    printf("[WTA] (id: %d).inputLink = %d\n", lastopAddr, winputLink)
+    printf("[WTA] (id: %d).pId = %d\n", lastopAddr, wpId)
+    printf("[WTA] (id: %d).count = %d\n", lastopAddr, wCount)
+
     //write Meta
     Metamem.write(addr_wire, wMeta)
 
@@ -207,7 +210,7 @@ class dfc_A extends Module {
 
   //sync with counterPart.interruptSignal
   when(counterPartInterrupt_wire) {
-    printf("---TableA Post exception---\n")
+    printf("[Post] One line of TableA had been set ZERO\n")
     io.interruptPost := true.B
     valid := valid.bitSet(counterPart.io.equalZeroAddr, false.B)
   }
@@ -215,11 +218,9 @@ class dfc_A extends Module {
   //read rData, only read Metamem.pId info, read Data without condition
   io.rData := Metamem(io.opAddr).pId
   io.equalZeroAddr := counterPart.io.equalZeroAddr
+
   //print
-  printf("Metamem(%d).inputLink = %d\n", io.opAddr, Metamem.read(io.opAddr).inputLink)
-  printf("Metamem(%d).pId = %d\n", io.opAddr, Metamem.read(io.opAddr).pId)
-  printf("io.rData = %d\n", io.rData)
-  printf("io.interruptPost = %d\n", io.interruptPost)
+  printf("[RTA] io.rData = %d\n", io.rData)
 }
 
 

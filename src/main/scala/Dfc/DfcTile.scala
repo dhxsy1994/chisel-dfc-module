@@ -59,6 +59,6 @@ class DfcTile extends Module {
   //counterDownAddr connect
   TableA.io.counterDownAddr <> TableD.io.counterDownAddr
 
-  printf("TileinterruptPost=%d\n", io.interruptPost)
+  printf("[INTPOST] DFC.interrupt = %d\n", io.interruptPost)
 }
 
