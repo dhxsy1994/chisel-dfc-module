@@ -77,7 +77,6 @@ class A_counterPart extends Module {
   when(equalZero) {
     stimulate := true.B
     equalZeroAddr := lastoperationAddr
-    printf("[INTPOST] counterPart.stimulate = %d\n", stimulate)
   }.otherwise{
     stimulate := false.B
   }
@@ -91,6 +90,8 @@ class A_counterPart extends Module {
 
   io.interruptSignal := stimulate
   io.equalZeroAddr := equalZeroAddr
+
+  printf("[INTPOST] counterPart.stimulate = %d\n", stimulate)
 }
 
 /*---------------------------------------------------------------------*/
