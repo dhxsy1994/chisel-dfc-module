@@ -1,4 +1,4 @@
-Chisel Project Template
+Chisel Project DFC Module
 =======================
 
 You've done the [Chisel Bootcamp](https://github.com/freechipsproject/chisel-bootcamp), and now you
@@ -18,7 +18,6 @@ We recommend LTS releases Java 8 and Java 11. You can install the JDK as recomme
 SBT is the most common built tool in the Scala community. You can download it [here](https://www.scala-sbt.org/download.html).
 
 ### How to get started
-
 #### Create a repository from the template
 
 This repository is a Github template. You can create your own repository from it by clicking the green `Use this template` in the top right.
