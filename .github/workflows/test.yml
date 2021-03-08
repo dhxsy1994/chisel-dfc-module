@@ -7,6 +7,10 @@ jobs:
     name: ci
     runs-on: ubuntu-latest
     steps:
+      - name: install verilator
+        run: |
+         sudo apt-get install verilator
+         verilator -V
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup Scala
