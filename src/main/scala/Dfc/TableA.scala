@@ -96,7 +96,6 @@ class A_counterPart extends Module {
 }
 
 /*---------------------------------------------------------------------*/
-//Separated dfc_AIO imp
 
 //A table Meta
 class A_Meta extends Bundle {
@@ -162,9 +161,9 @@ class dfc_A extends Module {
   //counterPart interruptSignal transfer
   counterPartInterrupt_wire := counterPart.io.interruptSignal
 
-  //wirte addr & data wire
-//  addr_wire := io.opAddr
-//  data_wire := io.wData
+  // TODO: cacnel buffer
+  // addr_wire := io.opAddr
+  // data_wire := io.wData
   addr_wire := lastopAddr
   data_wire := lastwData
 
