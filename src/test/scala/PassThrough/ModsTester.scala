@@ -38,3 +38,24 @@ class WaveformSpec_width extends FlatSpec with Matchers{
     } should be (true)
   }
 }
+
+class Tester(dut: DeviceUnderTest) extends PeekPokeTester(dut) {
+	  poke(dut.io.a, 3.U)
+	  poke(dut.io.b, 1.U)
+	  step(1)
+	  expect(dut.io.out, 1)
+	  poke(dut.io.a, 2.U)
+	  poke(dut.io.b, 0.U)
+	  step(1)
+	  expect(dut.io.out, 0)
+	  println ( " Result is : " + peek ( dut.io.out ).toString )
+}
+
+class WaveformSpec_Tester extends FlatSpec with Matchers{
+  "Wavefrom_test" should "pass" in {
+    Driver.execute(Array("--generate-vcd-output", "on"), () => new DeviceUnderTest() ){
+      c => new Tester(c)
+    } should be (true)
+  }
+}
+
