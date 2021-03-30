@@ -85,7 +85,7 @@ class A_counterPart extends Module {
   when(stimulate){
     stimulate := false.B
     //set line valid to false
-    valid.bitSet(equalZeroAddr, false.B)
+    valid := valid.bitSet(equalZeroAddr, false.B)
     counterMeta.write(equalZeroAddr, 255.U)
   }
 
